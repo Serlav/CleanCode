@@ -1,4 +1,4 @@
-package ru.serlav.cleancode.domain.models
+package ru.serlav.clean.code.domain.models
 
 class UserName(
     val firstName: String,

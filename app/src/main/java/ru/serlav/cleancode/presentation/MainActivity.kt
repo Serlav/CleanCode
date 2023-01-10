@@ -1,32 +1,26 @@
 package ru.serlav.cleancode.presentation
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import ru.serlav.clean.code.domain.usecase.GetUserNameUseCase
+import ru.serlav.clean.code.domain.usecase.SaveUserNameUseCase
 import ru.serlav.cleancode.R
 import ru.serlav.cleancode.data.repository.UserRepositoryImpl
+import ru.serlav.cleancode.data.storage.sharedPref.SharedPrefUserStorage
 import ru.serlav.cleencode.domain.models.SaveUserNameParam
-import ru.serlav.cleancode.domain.models.UserName
-import ru.serlav.cleancode.domain.usecase.GetUserNameUseCase
-import ru.serlav.cleancode.domain.usecase.SaveUserNameUseCase
 
 class MainActivity : AppCompatActivity() {
 
     private val userRepository by lazy(LazyThreadSafetyMode.NONE) {
-        ru.serlav.cleencode.data.repository.UserRepositoryImpl(
-            context = applicationContext
-        )
+        UserRepositoryImpl(userStorage = SharedPrefUserStorage(context = applicationContext))
     }
     private val getUserNameUseCase by lazy(LazyThreadSafetyMode.NONE) {
-        GetUserNameUseCase(
-            userRepository = userRepository
-        )
+        GetUserNameUseCase(userRepository = userRepository)
     }
     private val saveUserNameUseCase by lazy(LazyThreadSafetyMode.NONE) {
-        SaveUserNameUseCase(
-            userRepository = userRepository
-        )
+        SaveUserNameUseCase(userRepository = userRepository)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         receiveButton.setOnClickListener {
-            val userName: UserName = getUserNameUseCase.execute()
+            val userName: ru.serlav.clean.code.domain.models.UserName = getUserNameUseCase.execute()
             dataTextView.text = "${userName.firstName} ${userName.lastName}"
         }
     }

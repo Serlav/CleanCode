@@ -1,10 +1,11 @@
 package ru.serlav.cleancode.data.repository
 
+import ru.serlav.clean.code.domain.models.UserName
+import ru.serlav.clean.code.domain.repository.UserRepository
 import ru.serlav.cleancode.data.storage.models.User
 import ru.serlav.cleancode.data.storage.UserStorage
 import ru.serlav.cleencode.domain.models.SaveUserNameParam
-import ru.serlav.cleancode.domain.models.UserName
-import ru.serlav.cleancode.domain.repository.UserRepository
+
 
 class UserRepositoryImpl(private val userStorage: UserStorage) : UserRepository {
 
