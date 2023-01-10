@@ -4,43 +4,35 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import ru.serlav.clean.code.domain.usecase.GetUserNameUseCase
-import ru.serlav.clean.code.domain.usecase.SaveUserNameUseCase
+import androidx.lifecycle.ViewModelProvider
 import ru.serlav.cleancode.R
-import ru.serlav.cleancode.data.repository.UserRepositoryImpl
-import ru.serlav.cleancode.data.storage.sharedPref.SharedPrefUserStorage
-import ru.serlav.cleencode.domain.models.SaveUserNameParam
 
 class MainActivity : AppCompatActivity() {
 
-    private val userRepository by lazy(LazyThreadSafetyMode.NONE) {
-        UserRepositoryImpl(userStorage = SharedPrefUserStorage(context = applicationContext))
-    }
-    private val getUserNameUseCase by lazy(LazyThreadSafetyMode.NONE) {
-        GetUserNameUseCase(userRepository = userRepository)
-    }
-    private val saveUserNameUseCase by lazy(LazyThreadSafetyMode.NONE) {
-        SaveUserNameUseCase(userRepository = userRepository)
-    }
+    private lateinit var vm: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        vm = ViewModelProvider(this, MainViewModelFactory(this))[MainViewModel::class.java]
+
         val dataTextView = findViewById<TextView>(R.id.dataTextView)
         val dataEditView = findViewById<TextView>(R.id.dataEditText)
         val sendButton = findViewById<Button>(R.id.sendButton)
         val receiveButton = findViewById<Button>(R.id.receiveButton)
 
+        vm.resultLive.observe(this) {
+            dataTextView.text = it
+        }
+
         sendButton.setOnClickListener {
             val text = dataEditView.text.toString()
-            val params = SaveUserNameParam(name = text)
-            val result: Boolean = saveUserNameUseCase.execute(param = params)
-            dataTextView.text = "Save result = $result"
+            vm.save(text)
         }
 
         receiveButton.setOnClickListener {
-            val userName: ru.serlav.clean.code.domain.models.UserName = getUserNameUseCase.execute()
-            dataTextView.text = "${userName.firstName} ${userName.lastName}"
+            vm.load()
         }
     }
 }
